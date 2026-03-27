@@ -208,7 +208,7 @@ body {
   display:flex; gap:12px; align-items:flex-start;
   padding:14px 18px; border-bottom:1px solid var(--border);
   cursor:pointer; transition:background .15s;
-  position:relative;
+  position:relative; margin-top: 2px;
 }
 .nd-item:last-child { border-bottom:none; }
 .nd-item:hover { background:rgba(255,255,255,.025); }
