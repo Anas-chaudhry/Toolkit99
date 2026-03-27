@@ -5,7 +5,7 @@
 const CONFIG = {
   WORKER_URL: "https://toolkit99-worker.anaschawdhary157.workers.dev",
   WA_NUMBER:  "+923081665602",
-  WA_MSG:     "Hi! I'm interested in a Pro tool from Toolkit99.",
+  WA_MSG:     "Hi! I'm interested in a Pro tool from *Toolkit99*.",
 };
 
 const NOTIF_LS_KEY = "tk99_notif_read";
@@ -534,7 +534,7 @@ function openPaidModal(name) {
   modalWaBtn.onclick = () => {
     openWhatsApp(
       CONFIG.WA_NUMBER,
-      `Hi! I want access to Pro tool: ${name} (via Toolkit99)`,
+      `Hi! I want access to Pro tool: *${name}* (via *Toolkit99*)`,
       true // new tab
     );
   };
