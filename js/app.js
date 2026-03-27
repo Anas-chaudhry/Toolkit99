@@ -4,7 +4,7 @@
 
 const CONFIG = {
   WORKER_URL: "https://toolkit99-worker.anaschawdhary157.workers.dev",
-  WA_NUMBER:  "923001234567",
+  WA_NUMBER:  "+923081665602",
   WA_MSG:     "Hi! I'm interested in a Pro tool from Toolkit99.",
 };
 
@@ -491,22 +491,59 @@ document.getElementById("iframeBackBtn").addEventListener("click",()=>history.ba
 // ══════════════════════════════════════════════════════════════
 //  PAID MODAL
 // ══════════════════════════════════════════════════════════════
+function openWhatsApp(phone, message, newTab = false) {
+  const msg = encodeURIComponent(message);
+
+  const appUrl = `whatsapp://send?phone=${phone}&text=${msg}`;
+  const webUrl = `https://wa.me/${phone}?text=${msg}`;
+
+  const start = Date.now();
+
+  // Try app (chooser)
+  window.location.href = appUrl;
+
+  // Fallback
+  setTimeout(() => {
+    if (Date.now() - start < 2000) {
+      alert("WhatsApp not installed");
+
+      if (newTab) {
+        window.open(webUrl, "_blank");
+      } else {
+        window.location.href = webUrl;
+      }
+    }
+  }, 1500);
+}
+
 function openPaidModal(name) {
-  paidModalName.textContent=name;
-  const msg=encodeURIComponent(`Hi! I want access to Pro tool: ${name} (via Toolkit99)`);
-  modalWaBtn.onclick=()=>window.open(`https://wa.me/${CONFIG.WA_NUMBER}?text=${msg}`,"_blank");
+  paidModalName.textContent = name;
+
+  modalWaBtn.onclick = () => {
+    openWhatsApp(
+      CONFIG.WA_NUMBER,
+      `Hi! I want access to Pro tool: ${name} (via Toolkit99)`,
+      true // new tab
+    );
+  };
+
   paidModal.classList.add("show");
 }
+
 document.getElementById("modalCloseBtn").addEventListener("click",()=>paidModal.classList.remove("show"));
 paidModal.addEventListener("click",e=>{ if (e.target===paidModal) paidModal.classList.remove("show"); });
 
 // ══════════════════════════════════════════════════════════════
 //  FLOAT WA
 // ══════════════════════════════════════════════════════════════
-document.getElementById("floatWa").href=
-  `https://wa.me/${CONFIG.WA_NUMBER}?text=${encodeURIComponent(CONFIG.WA_MSG)}`;
+document.getElementById("floatWa").addEventListener("click", function (e) {
+  e.preventDefault();
 
-// ══════════════════════════════════════════════════════════════
+  openWhatsApp(
+    CONFIG.WA_NUMBER,
+    CONFIG.WA_MSG
+  );
+}); ══════════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════════
 loadReadMap();
