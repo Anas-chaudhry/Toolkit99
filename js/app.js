@@ -493,27 +493,39 @@ document.getElementById("iframeBackBtn").addEventListener("click",()=>history.ba
 // ══════════════════════════════════════════════════════════════
 function openWhatsApp(phone, message, newTab = false) {
   const msg = encodeURIComponent(message);
-
-  const appUrl = `whatsapp://send?phone=${phone}&text=${msg}`;
   const webUrl = `https://wa.me/${phone}?text=${msg}`;
+  const appUrl = `whatsapp://send?phone=${phone}&text=${msg}`;
 
-  const start = Date.now();
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  // Try app (chooser)
-  window.location.href = appUrl;
+  if (isMobile) {
+    // Mobile pe app try karo
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+    iframe.src = appUrl;
 
-  // Fallback
-  setTimeout(() => {
-    if (Date.now() - start < 2000) {
-      alert("WhatsApp not installed");
-
-      if (newTab) {
-        window.open(webUrl, "_blank");
-      } else {
-        window.location.href = webUrl;
+    // Agar app nahi khula toh web fallback
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      if (document.hasFocus()) {
+        // App nahi khula, user abhi bhi page pe hai
+        if (newTab) {
+          window.open(webUrl, "_blank");
+        } else {
+          window.location.href = webUrl;
+        }
       }
+    }, 1500);
+
+  } else {
+    // Desktop pe seedha web WhatsApp
+    if (newTab) {
+      window.open(webUrl, "_blank");
+    } else {
+      window.location.href = webUrl;
     }
-  }, 1500);
+  }
 }
 
 function openPaidModal(name) {
