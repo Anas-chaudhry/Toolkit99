@@ -5,7 +5,7 @@
 const CONFIG = {
   WORKER_URL: "https://toolkit99-worker.anaschawdhary157.workers.dev",
   WA_NUMBER:  "+923081665602",
-  WA_MSG:     "Hi! I'm interested in a Pro tool from *Toolkit99*.",
+  WA_MSG:     "Hi! I'm interested in a Pro tool from Toolkit99.",
 };
 
 const NOTIF_LS_KEY = "tk99_notif_read";
@@ -62,7 +62,8 @@ function timeAgo(ts) {
   if (s<60)  return `${s}s ago`;
   if (m<60)  return `${m}min ago`;
   if (h<24)  { const rm=m%60; return rm?`${h}h ${rm}m ago`:`${h}h ago`; }
-  const rh=h%24; return rh?`${d}d ${rh}h ago`:`${d}d ago`;
+  const rh=h%24; 
+  return rh?`${d}d ${rh}h ago`:`${d}d ago`;
 }
 function exactDate(ts) {
   const d=new Date(ts);
@@ -117,8 +118,8 @@ async function fetchTools() {
     acc.innerHTML=`
       <div class="empty-state">
         <i class="fa-solid fa-plug-circle-xmark"></i>
-        <strong>Could not connect</strong>
-        ${e.message||"Check your worker URL in CONFIG."}
+        <strong>Something Went Wrong !</strong>
+        ${e.message||"Please Check Back Later"}
       </div>`;
   } finally { hideLoader(); }
 }
@@ -218,7 +219,7 @@ function render() {
         <div class="acc-icon-box">${tool.icon}</div>
         <div class="acc-title">
           <div class="acc-name">${tool.name}</div>
-          <div class="acc-time"><i class="fa-regular fa-clock"></i>${timeAgo(tool.createdAt)}</div>
+          <div class="acc-time"><i class="fa-regular fa-clock"></i>${timeAgo(tool.updatedAt * 1000)}</div>
         </div>
         <div class="acc-right">
           <span class="badge ${tool.badge}">${tool.badge==="paid"?"★ PRO":"FREE"}</span>
@@ -230,13 +231,16 @@ function render() {
           <div class="acc-content">
             <p class="ac-desc">${tool.desc}</p>
             <div class="ac-meta-row">
-              <div class="ac-date-full"><i class="fa-regular fa-calendar"></i>${exactDate(tool.createdAt)}</div>
+              <div class="ac-date-full"><i class="fa-regular fa-calendar"></i>${exactDate(tool.updatedAt * 1000)} (Updated at)</div>
+            </div>
+            <div class="ac-meta-row">
+              <div class="ac-date-full"><i class="fa-regular fa-calendar"></i>${exactDate(tool.createdAt * 1000)} (Created at)</div>
             </div>
             ${tagsHtml?`<div class="ac-tags">${tagsHtml}</div>`:""}
             <button class="ac-launch-btn ${tool.badge==="paid"?"paid-btn":"free-btn"}"
               data-badge="${tool.badge}" data-url="${tool.url||""}" data-name="${tool.name}">
               <i class="fa-solid fa-${tool.badge==="paid"?"lock":"arrow-up-right-from-square"}"></i>
-              ${tool.badge==="paid"?"Pro Access":"Launch Tool"}
+              ${tool.badge==="paid"?"Pro Access":tool?.button}
             </button>
           </div>
         </div>
@@ -443,7 +447,7 @@ function renderNotifList() {
         <div class="nd-ic ${ic.cls}"><i class="${ic.icon}"></i></div>
         <div class="nd-body">
           <div class="nd-text">${n.text}</div>
-          <div class="nd-time">${timeAgo(n.createdAt)}</div>
+          <div class="nd-time">${timeAgo(n.createdAt * 1000)}</div>
         </div>
       </div>`;
   }).join("");
@@ -493,39 +497,27 @@ document.getElementById("iframeBackBtn").addEventListener("click",()=>history.ba
 // ══════════════════════════════════════════════════════════════
 function openWhatsApp(phone, message, newTab = false) {
   const msg = encodeURIComponent(message);
-  const webUrl = `https://wa.me/${phone}?text=${msg}`;
+
   const appUrl = `whatsapp://send?phone=${phone}&text=${msg}`;
+  const webUrl = `https://wa.me/${phone}?text=${msg}`;
 
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const start = Date.now();
 
-  if (isMobile) {
-    // Mobile pe app try karo
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-    iframe.src = appUrl;
+  // Try app (chooser)
+  window.location.href = appUrl;
 
-    // Agar app nahi khula toh web fallback
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-      if (document.hasFocus()) {
-        // App nahi khula, user abhi bhi page pe hai
-        if (newTab) {
-          window.open(webUrl, "_blank");
-        } else {
-          window.location.href = webUrl;
-        }
+  // Fallback
+  setTimeout(() => {
+    if (Date.now() - start < 2000) {
+      alert("WhatsApp not installed");
+
+      if (newTab) {
+        window.open(webUrl, "_blank");
+      } else {
+        window.location.href = webUrl;
       }
-    }, 1500);
-
-  } else {
-    // Desktop pe seedha web WhatsApp
-    if (newTab) {
-      window.open(webUrl, "_blank");
-    } else {
-      window.location.href = webUrl;
     }
-  }
+  }, 1500);
 }
 
 function openPaidModal(name) {
@@ -534,7 +526,7 @@ function openPaidModal(name) {
   modalWaBtn.onclick = () => {
     openWhatsApp(
       CONFIG.WA_NUMBER,
-      `Hi! I want access to Pro tool: *${name}* (via *Toolkit99*)`,
+      `Hi! I want access to Pro tool: ${name} (via Toolkit99)`,
       true // new tab
     );
   };
@@ -556,7 +548,7 @@ document.getElementById("floatWa").addEventListener("click", function (e) {
     CONFIG.WA_MSG
   );
 }); 
-//══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════════
 loadReadMap();
