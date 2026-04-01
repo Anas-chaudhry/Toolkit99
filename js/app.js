@@ -236,6 +236,10 @@ function render() {
     const tagsHtml=(tool.tags||[])
       .map(tg=>`<span class="ac-tag"><i class="fa-solid fa-hashtag"></i>${tg}</span>`)
       .join("");
+    const now = Date.now() / 1000;
+    // NEW Badge logic (updated in last 24 hours)
+    const isNew = (now - tool.updatedAt) < 86400;
+    const newBadge = isNew ? `<span class="badge new">NEW</span>` : "";
 
     item.innerHTML=`
       <div class="acc-head">
@@ -245,6 +249,7 @@ function render() {
           <div class="acc-time"><i class="fa-regular fa-clock"></i>${timeAgo(tool.updatedAt * 1000)}</div>
         </div>
         <div class="acc-right">
+          ${newBadge}
           <span class="badge ${tool.badge}">${tool.badge==="paid"?"★ PRO":"FREE"}</span>
           <i class="fa-solid fa-chevron-down acc-chevron"></i>
         </div>

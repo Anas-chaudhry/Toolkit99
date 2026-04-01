@@ -439,6 +439,37 @@ body {
 .badge { font-size:.58rem; font-weight:700; padding:4px 10px; border-radius:7px; letter-spacing:.4px; }
 .badge.free { background:var(--green-low); color:var(--green); border:1px solid var(--green-bdr); }
 .badge.paid { background:var(--amber-low); color:var(--amber); border:1px solid var(--amber-bdr); }
+
+/* NEW Badge Styling */
+.badge.new {
+  position: absolute;
+  background:#FF3B30;
+  color: white;
+  font-size: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 10px rgba(239,68,68,0.25);
+  animation: badgePulse 1.6s ease-in-out infinite;
+  top: 0 ; right: 0;
+  padding: 2px 10px;
+  border-radius: 0;
+  border-bottom-left-radius: 10px
+  
+}
+@keyframes badgePulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.70;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .acc-chevron {
   color:var(--muted); font-size:.72rem;
   transition:transform .35s ease,color .25s; flex-shrink:0;
