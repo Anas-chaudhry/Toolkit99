@@ -3,13 +3,16 @@
 ═══════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
+/* ── DARK THEME (default) ─────────────────────── */
+:root, [data-theme="dark"] {
   --bg:        #0d0e11;
+  --bg-rgb:    13,14,17;
   --surface:   #141618;
   --surface2:  #1b1d22;
   --border:    #22252b;
   --text:      #eceef5;
-  --muted:     #545870;
+  --muted:     #7c829a;
+  --label:     #9aa0ba;
   --amber:     #fbbf24;
   --amber-low: rgba(251,191,36,.10);
   --amber-mid: rgba(251,191,36,.18);
@@ -22,6 +25,27 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 14px;
+}
+
+/* ── LIGHT THEME ──────────────────────────────── */
+[data-theme="light"] {
+  --bg:        #f0f2f7;
+  --bg-rgb:    240,242,247;
+  --surface:   #ffffff;
+  --surface2:  #f5f6fa;
+  --border:    #d8dbe8;
+  --text:      #1a1d2e;
+  --muted:     #6b7280;
+  --label:     #374151;
+  --amber:     #d97706;
+  --amber-low: rgba(217,119,6,.08);
+  --amber-mid: rgba(217,119,6,.14);
+  --amber-bdr: rgba(217,119,6,.30);
+  --green:     #16a34a;
+  --green-low: rgba(22,163,74,.08);
+  --green-bdr: rgba(22,163,74,.25);
+  --red:       #dc2626;
+  --wa:        #25D366;
 }
 
 body {
@@ -38,7 +62,7 @@ body {
 /* ── PAGE LOADER ──────────────────────────────────────────────── */
 .page-loader {
   position: fixed; inset: 0; z-index: 9999;
-  background: rgba(13,14,17,0.75);
+  background: rgba(var(--bg-rgb, 13,14,17), 0.85);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   display: flex; align-items: center; justify-content: center;
   transition: opacity .4s, visibility .4s;
@@ -258,7 +282,7 @@ body {
 @keyframes statReveal { to { opacity:1; transform:translateY(0); } }
 .hst-icon { font-size:.9rem; opacity:.65; }
 .hst-num  { font-size:1.35rem; font-weight:800; letter-spacing:-.5px; line-height:1; }
-.hst-lbl  { font-size:.58rem; color:var(--muted); text-transform:uppercase; letter-spacing:1.2px; margin-top:2px; }
+.hst-lbl  { font-size:.58rem; color:var(--label); text-transform:uppercase; letter-spacing:1.2px; margin-top:2px; font-weight:700; }
 
 /* ── CONTROLS ROW ─────────────────────────────────────────────── */
 .controls-row { display:flex; gap:8px; margin-bottom:14px; align-items:center; }
@@ -279,7 +303,18 @@ body {
   font-size:.83rem; padding:11px 14px 11px 40px; width:100%;
   /* hide on scroll blur handled by JS */
 }
-.search-wrap input::placeholder { color:var(--muted); }
+.search-wrap input::placeholder { color: var(--label); opacity: .75; }
+
+/* ── THEME TOGGLE BTN ─────────────────────────── */
+.theme-toggle-btn {
+  width: 38px; height: 38px; border-radius: var(--radius-sm);
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted); font-size: .88rem;
+  transition: all .18s; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle-btn:hover { color: var(--amber); border-color: var(--amber-bdr); background: var(--amber-low); }
 
 /* Change 5: inline result chip */
 .search-result-chip {
@@ -332,7 +367,7 @@ body {
 
 .fsd-section-label {
   padding:10px 14px 6px;
-  font-size:.6rem; font-weight:700; color:var(--muted);
+  font-size:.6rem; font-weight:700; color:var(--label);
   letter-spacing:1.5px; text-transform:uppercase;
 }
 .fsd-section-label:not(:first-child) {
@@ -542,3 +577,14 @@ body {
   .iframe-url { display:none; }
   .acc-content { padding:14px; }
 }
+
+/* ── LIGHT THEME SPECIFIC OVERRIDES ──────────────────────────── */
+[data-theme="light"] .acc-head:hover { background: rgba(0,0,0,.025); }
+[data-theme="light"] .nd-item:hover  { background: rgba(0,0,0,.03); }
+[data-theme="light"] .fsd-option:hover { background: rgba(0,0,0,.04); color: var(--text); }
+[data-theme="light"] .tbl tr:hover td { background: rgba(0,0,0,.02); }
+[data-theme="light"] .nm-chip-count { background: rgba(0,0,0,.07); }
+[data-theme="light"] .nm-chip.active .nm-chip-count { background: rgba(217,119,6,.18); }
+[data-theme="light"] .nd-item.unread { background: rgba(217,119,6,.07); }
+[data-theme="light"] .ac-tag { background: var(--surface2); }
+[data-theme="light"] .filtersort-dropdown { box-shadow: 0 8px 32px rgba(0,0,0,.12); }

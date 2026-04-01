@@ -2,6 +2,29 @@
 //  Toolkit99 — app.js  v3
 // ═══════════════════════════════════════════════════════════════
 
+// ── THEME ─────────────────────────────────────────────────────
+(function syncThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const icon  = document.getElementById('themeIcon');
+  if (icon) icon.className = theme === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+})();
+
+function toggleTheme() {
+  var DARK_COLOR  = '#141618';
+  var LIGHT_COLOR = '#ffffff';
+  const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.className = next === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+  // Update browser topbar / mobile status bar color
+  const tc = document.getElementById('tcMeta') || document.querySelector('meta[name="theme-color"]');
+  if (tc) tc.setAttribute('content', next === 'light' ? LIGHT_COLOR : DARK_COLOR);
+  try { localStorage.setItem('tk99_theme', next); } catch {}
+}
+
+document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+
 const CONFIG = {
   WORKER_URL: "https://toolkit99-worker.anaschawdhary157.workers.dev",
   WA_NUMBER:  "+923081665602",
@@ -67,7 +90,7 @@ function timeAgo(ts) {
 }
 function exactDate(ts) {
   const d=new Date(ts);
-  return d.toLocaleDateString("en-US",{month:"2-digit",day:"2-digit",year:"numeric"})
+  return d.toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit",year:"numeric"})
        +" "+d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
 }
 function addRipple(el,e) {
@@ -231,10 +254,10 @@ function render() {
           <div class="acc-content">
             <p class="ac-desc">${tool.desc}</p>
             <div class="ac-meta-row">
-              <div class="ac-date-full"><i class="fa-regular fa-calendar"></i>${exactDate(tool.updatedAt * 1000)} (Updated at)</div>
+              <div class="ac-date-full"><i class="fa-regular fa-calendar"></i>${exactDate(tool.updatedAt * 1000)} (Updated) ${timeAgo(tool.updatedAt * 1000)}</div>
             </div>
             <div class="ac-meta-row">
-              <div class="ac-date-full"><i class="fa-regular fa-calendar"></i>${exactDate(tool.createdAt * 1000)} (Created at)</div>
+              <div class="ac-date-full"><i class="fa-regular fa-calendar"></i>${exactDate(tool.createdAt * 1000)} (Created) ${timeAgo(tool.createdAt * 1000)}</div>
             </div>
             ${tagsHtml?`<div class="ac-tags">${tagsHtml}</div>`:""}
             <button class="ac-launch-btn ${tool.badge==="paid"?"paid-btn":"free-btn"}"
@@ -245,7 +268,6 @@ function render() {
           </div>
         </div>
       </div>`;
-
     // head toggle
     item.querySelector(".acc-head").addEventListener("click",e=>{
       addRipple(item.querySelector(".acc-head"),e);
@@ -259,9 +281,17 @@ function render() {
       e.stopPropagation();
       const btn=e.currentTarget;
       addRipple(btn,e);
-      btn.dataset.badge==="paid"
-        ? openPaidModal(btn.dataset.name)
-        : (btn.dataset.url ? openIframe(btn.dataset.url,btn.dataset.name) : showToast("No URL configured."));
+      console.log(tool?.external);
+
+btn.dataset.badge === "paid"
+  ? openPaidModal(btn.dataset.name)
+  : btn.dataset.url
+    ? (
+        tool?.external
+          ? window.open(btn.dataset.url, "_blank") // external → new page
+          : openIframe(btn.dataset.url, btn.dataset.name) // internal → iframe
+      )
+    : showToast("No URL configured.");
     });
 
     frag.appendChild(item);
@@ -484,9 +514,17 @@ document.getElementById("markAllBtn").addEventListener("click",()=>{
 //  IFRAME
 // ══════════════════════════════════════════════════════════════
 function openIframe(url,name) {
-  iframeTitleEl.textContent=name; iframeUrlEl.textContent=url;
-  toolIframe.src=url; iframeOverlay.classList.add("show");
+  pageLoader.classList.remove("hidden"); // show loader
+  iframeTitleEl.textContent=name; 
+  iframeUrlEl.textContent=url;
+  toolIframe.src=url; 
+  iframeOverlay.classList.add("show");
   history.pushState({iframeOpen:true},"");
+  toolIframe.addEventListener("load", () => {
+  setTimeout(() => {
+    pageLoader.classList.add("hidden");
+      }, 250);
+   });
 }
 function closeIframe() { iframeOverlay.classList.remove("show"); toolIframe.src=""; }
 window.addEventListener("popstate",()=>{ if (iframeOverlay.classList.contains("show")) closeIframe(); });
